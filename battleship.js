@@ -72,7 +72,7 @@ var model = {
         for (var i = 0; i < this.numShips; i++) {
             do {
                 locations = this.generateShip();
-            } while (this.collision(locations));//返回true循环下面的代码
+            } while (this.collision(locations));// 返回true循环下面的代码
             this.ships[i].locations = locations;
         }
     },
@@ -147,13 +147,20 @@ var controller = {
     }
 };
 function init() {
-    //按钮事件
+    //Fire按钮事件
     var fireButton = document.getElementById('fireButton');
     fireButton.onclick = handleFireButton;
     //文本框事件
     var guessInput = document.getElementById('guessInput');
-    guessInput.onkeypress = handleKeyPress;//键盘按回车也能执行，点击fire按钮的命令
+    guessInput.onkeypress = handleKeyPress;
     model.generateShipLocations();
+    //作弊按钮事件
+    var cheatButton = document.getElementById('cheat');
+    cheatButton.onclick = cheat;
+    //文本框获得焦点，不显示作弊
+    guessInput.onfocus = focus;
+    //网页加载完，编辑框自动获得焦点
+    document.getElementById('guessInput').focus();
 }
 function handleFireButton() {
     var guessInput = document.getElementById('guessInput');
@@ -166,6 +173,37 @@ function handleKeyPress(e) {
     if (e.keyCode === 13) {
         fireButton.click();
         return false;
+    }
+}
+//作弊
+function cheat() {
+    for (var a = 0; a < model.shipLength; a++) {
+        var arry = model.ships[a].locations;
+        var hitmiss = model.ships[a].hits;
+        for (var i = 0; i < arry.length; i++) {
+            var value = arry[i];
+            var inner = document.getElementById(value);
+            inner.setAttribute("style", "background: url('ship.png') no-repeat center center;")
+            var ifhit = hitmiss[i];
+            if (ifhit == 'hit') {
+                inner.style = "background: url('ship.png') no-repeat center center;filter: hue-rotate(220deg);";
+            } else {
+                inner.style = "background: url('ship.png') no-repeat center center;filter: opacity(30%);";
+            }
+        }
+
+    }
+}
+//文本框获得焦点，不显示作弊
+function focus() {
+    for (var a = 0; a < model.shipLength; a++) {
+        var arry = model.ships[a].locations;
+        for (var i = 0; i < arry.length; i++) {
+            var value = arry[i];
+            var obj = document.getElementById(value)
+            obj.style.background = "";
+            obj.style.filter = '';
+        }
     }
 }
 window.onload = init;
